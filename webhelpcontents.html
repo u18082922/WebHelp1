@@ -1,0 +1,363 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<title>New Help</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css"> 
+<!--
+body{margin: 5px;} 
+.selected {font-weight: normal;background-color: #E2E2E2;padding:0px,2px,0px,2px;}
+.unselected { font-weight: normal;padding:0px,2px,0px,2px;}
+.hand { cursor: hand; }
+.p {height: 16px;width: 16px;vertical-align: middle;border: 0;}
+div,body { font-family: Tahoma, Verdana; font-size: 11px; }
+A:link {text-decoration: none; color:#000000}
+A:visited {text-decoration: none; color: #000000}
+A:active {text-decoration: none; color: #000000 }
+A:hover {text-decoration: none; color: #FF0000 }
+
+-->
+</style>
+
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+var cl,pn,pm,bl;
+var path = 'icons/';
+var pos = 0;
+var icon;
+var tar = 'content';
+var display;
+var imgi;
+var AutoCollapse;
+var LastSelected = -1;
+var loaded = false;
+var max;
+var divlist;
+
+function SetEnv(v,a){
+
+if(v==0){ 
+	pn = [['daplus.gif','daminus.gif'],['tplus.gif','tminus.gif'],['uaplus.gif','uaminus.gif'],['splus.gif','sminus.gif']];
+	PreloadImg('downangle.gif','tshaped.gif','upangle.gif','sline.gif','daplus.gif','daminus.gif','tplus.gif','tminus.gif','uaplus.gif','uaminus.gif','splus.gif','sminus.gif','blank.gif','line.gif');
+}else{
+	pn = [['plus.gif','minus.gif']];
+	PreloadImg('plus.gif','minus.gif','blank.gif');
+
+}
+AutoCollapse = a;
+}
+
+ function PreloadImg(){
+if (document.images) { 
+	var imgs = PreloadImg.arguments; 
+	var pload = new Array();
+	for (var i=0; i<imgs.length; i++) { 
+		pload[i] = new Image; 
+		pload[i].src = path + imgs[i]; 
+	} 
+} 
+ } 
+
+function get(o){
+var x;
+if(document.all) x=document.all[o]; 
+if(document.getElementById) x=document.getElementById(o);
+
+return x;
+}
+
+
+function pnImg(img){
+var i,j;
+for(i=0;i<=3;i++){
+	for(j=0;j<=1;j++){
+	if(img.substr(img.lastIndexOf('/') + 1)== pn[i][j]){
+		return i;
+	}
+	}
+}
+}
+function icon(img){
+var f;
+f = img.substr(img.lastIndexOf('/') + 1);
+if( f=='1.gif' || f=='2.gif'){
+	return ['1.gif','2.gif'];
+}
+if( f=='3.gif' || f=='4.gif'){
+	return ['3.gif','4.gif'];
+}
+if( f=='5.gif' || f=='6.gif'){
+	return ['5.gif','6.gif'];
+}
+if( f=='7.gif' || f=='8.gif'){
+	return ['7.gif','8.gif'];
+}
+return [f,f];
+}
+
+function show(id){
+get('d' + id).style.display='block';
+if(get('imgn' + id )) get('imgn' + id ).src= path + pn[pnImg(get('imgn' + id ).src)][1];
+get('img' + id ).src= path + icon(get('img' + id ).src)[1];
+
+}
+
+function collapse(id){
+get('d' + id ).style.display='none';
+if(get('imgn' + id )) get('imgn' + id ).src= path + pn[pnImg(get('imgn' + id ).src)][0];
+get('img' + id ).src= path + icon(get('img' + id ).src)[0];
+
+}
+
+function collapseAll(){
+var i;
+var o;
+for(i=0;i<=divlist.length-1;i++){
+	if(o=get('d' + divlist[i])){
+		if(o.style.display!='none'){ 
+			collapse(divlist[i]);
+		}
+	}
+}
+}
+
+function showAll(){
+var i;
+var o;
+for(i=0;i<=divlist.length-1;i++){
+	if(o=get('d' + divlist[i])){
+		if(o.style.display!='block'){ 
+			show(divlist[i]);
+		}
+	}
+}
+}
+
+function unselectAll(){
+var i=0;
+while(get("l" + i)){
+	get("l" + i).className = "unselected";
+	i++;
+}
+}
+
+function clickNode(index){
+var e;
+
+e = get("l" + index);
+if(e==null) return;
+e = e.parentNode;
+if(e.nodeName == 'A'){
+	if(e.href!= window.location.href + '#'){
+		parent.parent.content.location.href = e.href;
+	}else{
+		selectNode(index);
+	}
+	e.onclick;
+}
+}
+
+function showParent(ele){
+var e;
+e = ele.parentNode;
+
+if(e==null) return;
+
+if(e.nodeName == 'DIV'){
+	if(e.id!='') show(e.id.substring(1,e.id.length ));
+}else if(e.nodeName == 'A'){
+
+}
+showParent(e);
+}
+
+function showNode(index){
+showParent(get("l" + index));
+LinkClick(index);
+}
+
+function selectNode(index){
+if(LastSelected!=index){
+//collapseAll();
+showParent(get("l" + index));
+LinkClick(index);
+get('l' + index).scrollIntoView(true);
+
+
+//alert(get('l' + index).offsetHeight + '|' + document.body.clientHeight + '|' + document.body.offsetHeight);
+window.scrollTo(0,document.body.scrollTop); // - document.body.clientHeight /3);
+}
+}
+
+
+function NodeClick(id){
+if(get('d' + id ).style.display=='none'){
+	show(id);
+}else{
+	collapse(id);
+}
+return false;
+}
+
+function LinkDblClick(id){
+if(!AutoCollapse){
+	if(get('d' + id ).style.display=='none'){
+		show(id);
+	}else{
+		collapse(id);
+	}
+}
+return false;
+}
+
+function LinkClick(index,hasChild,r){
+if(AutoCollapse && hasChild){
+	if(get('d' + index ).style.display=='none'){
+		collapseAll()
+		showParent(get('l' + index));
+		show(index);
+	}else{
+		collapseAll()
+		showParent(get('l' + index));	
+		collapse(index);
+	}
+}
+if(LastSelected!=-1){
+	get('l' + LastSelected).className = "unselected";
+}
+get('l' + index).className = "selected";
+LastSelected = index;
+return r;
+}
+
+function body_onmousemove(event){
+if(typeof(document.body.scrollTop)!='undefined'){
+if(parseInt(event.clientX)<5){
+window.scroll(0,document.body.scrollTop);}}
+if(typeof(window.scrollY)!='undefined'){
+if(parseInt(event.clientX)<5){
+window.scrollTo(0,window.scrollY);}}
+}
+
+window.defaultStatus = '';
+
+function body_onload(){
+get('loading').style.display='none';
+loaded = true;
+if(parent.parent.content.document.readyState){
+	if(parent.parent.content.document.readyState == 'complete'){
+		try{parent.parent.content.syn();}catch(e){};
+	}
+}else{
+	if(parent.parent.contentLoaded){
+		try{parent.parent.content.syn();}catch(e){};
+	}
+}
+}
+
+//-->
+</SCRIPT>
+<script language="JavaScript" src="languages.js"></script>
+</head>
+
+<body bgcolor="#FFFFFF" onmousemove="body_onmousemove(event);" onload="body_onload();">
+<div id="loading"><font color="#FF0000" size="1"> Loading table of contents... 
+</font><br><br></div>
+<script>SetEnv(0,false)</script><div><nobr><a href="#" onClick="return NodeClick('0')"><img id="imgn0" src="icons/daplus.gif" class="p"></a><a href="#" onclick="return LinkClick('0',true,false)" onDblClick="return LinkDblClick('0')" target="content" title="3. Help Functionalities" onmousemove="window.status='3. Help Functionalities'"><img id="img0" src="icons/1.gif" class="p"> <span id="l0" class="unselected">3. Help Functionalities</span></a></nobr></div>
+<div id="d0" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/31--introduction.html" onclick="return LinkClick('1',false,true)" target="content" title="3.1    Introduction" onmousemove="window.status='3.1    Introduction'"><img src="icons/11.gif" class="p"> <span id="l1" class="unselected">3.1    Introduction</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('2')"><img id="imgn2" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('2',true,false)" onDblClick="return LinkDblClick('2')" target="content" title="3.2    Help Functionality" onmousemove="window.status='3.2    Help Functionality'"><img id="img2" src="icons/1.gif" class="p"> <span id="l2" class="unselected">3.2    Help Functionality</span></a></nobr></div>
+<div id="d2" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/321-help-functionality.html" onclick="return LinkClick('3',false,true)" target="content" title="3.2.1 Help Functionality" onmousemove="window.status='3.2.1 Help Functionality'"><img src="icons/11.gif" class="p"> <span id="l3" class="unselected">3.2.1 Help Functionality</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('4')"><img id="imgn4" src="icons/uaplus.gif" class="p"></a><a href="pages/322-additional-help.html" onclick="return LinkClick('4',true,true)" onDblClick="return LinkDblClick('4')" target="content" title="3.2.2 Additional help" onmousemove="window.status='3.2.2 Additional help'"><img id="img4" src="icons/1.gif" class="p"> <span id="l4" class="unselected">3.2.2 Additional help</span></a></nobr></div>
+<div id="d4" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('5',false,true)" target="content" title="Name" onmousemove="window.status='Name'"><img src="icons/11.gif" class="p"> <span id="l5" class="unselected">Name</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/e-mail.html" onclick="return LinkClick('6',false,true)" target="content" title="E-mail" onmousemove="window.status='E-mail'"><img src="icons/11.gif" class="p"> <span id="l6" class="unselected">E-mail</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/phone.html" onclick="return LinkClick('7',false,true)" target="content" title="Phone" onmousemove="window.status='Phone'"><img src="icons/11.gif" class="p"> <span id="l7" class="unselected">Phone</span></a></nobr></div>
+</div></div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/33-conclusion.html" onclick="return LinkClick('8',false,true)" target="content" title="3.3 Conclusion" onmousemove="window.status='3.3 Conclusion'"><img src="icons/11.gif" class="p"> <span id="l8" class="unselected">3.3 Conclusion</span></a></nobr></div>
+</div><div><nobr><a href="#" onClick="return NodeClick('9')"><img id="imgn9" src="icons/uaplus.gif" class="p"></a><a href="#" onclick="return LinkClick('9',true,false)" onDblClick="return LinkDblClick('9')" target="content" title="4. User Functionality System" onmousemove="window.status='4. User Functionality System'"><img id="img9" src="icons/1.gif" class="p"> <span id="l9" class="unselected">4. User Functionality System</span></a></nobr></div>
+<div id="d9" style="display:none"><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/41--introduction.html" onclick="return LinkClick('10',false,true)" target="content" title="4.1    Introduction" onmousemove="window.status='4.1    Introduction'"><img src="icons/11.gif" class="p"> <span id="l10" class="unselected">4.1    Introduction</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><a href="#" onClick="return NodeClick('11')"><img id="imgn11" src="icons/uaplus.gif" class="p"></a><a href="#" onclick="return LinkClick('11',true,false)" onDblClick="return LinkDblClick('11')" target="content" title="4.2    Web Application Process – Management Side" onmousemove="window.status='4.2    Web Application Process – Management Side'"><img id="img11" src="icons/1.gif" class="p"> <span id="l11" class="unselected">4.2    Web Application Process – Management Side</span></a></nobr></div>
+<div id="d11" style="display:none"><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><a href="#" onClick="return NodeClick('12')"><img id="imgn12" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('12',true,false)" onDblClick="return LinkDblClick('12')" target="content" title="4.2.1 Login Functions" onmousemove="window.status='4.2.1 Login Functions'"><img id="img12" src="icons/1.gif" class="p"> <span id="l12" class="unselected">4.2.1 Login Functions</span></a></nobr></div>
+<div id="d12" style="display:none"><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/4211-login-page.html" onclick="return LinkClick('13',false,true)" target="content" title="4.2.1.1 Login page" onmousemove="window.status='4.2.1.1 Login page'"><img src="icons/11.gif" class="p"> <span id="l13" class="unselected">4.2.1.1 Login page</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/4212-logout.html" onclick="return LinkClick('14',false,true)" target="content" title="4.2.1.2 Logout" onmousemove="window.status='4.2.1.2 Logout'"><img src="icons/11.gif" class="p"> <span id="l14" class="unselected">4.2.1.2 Logout</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/4213-reset-password.html" onclick="return LinkClick('15',false,true)" target="content" title="4.2.1.3 Reset Password" onmousemove="window.status='4.2.1.3 Reset Password'"><img src="icons/11.gif" class="p"> <span id="l15" class="unselected">4.2.1.3 Reset Password</span></a></nobr></div>
+</div><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><a href="#" onClick="return NodeClick('16')"><img id="imgn16" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('16',true,false)" onDblClick="return LinkDblClick('16')" target="content" title="4.2.2 Reports" onmousemove="window.status='4.2.2 Reports'"><img id="img16" src="icons/1.gif" class="p"> <span id="l16" class="unselected">4.2.2 Reports</span></a></nobr></div>
+<div id="d16" style="display:none"><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/4221-generate-vehicle-make-report.html" onclick="return LinkClick('17',false,true)" target="content" title="4.2.2.1 Generate Vehicle Make Report" onmousemove="window.status='4.2.2.1 Generate Vehicle Make Report'"><img src="icons/11.gif" class="p"> <span id="l17" class="unselected">4.2.2.1 Generate Vehicle Make Report</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/4222-generate-premium-report.html" onclick="return LinkClick('18',false,true)" target="content" title="4.2.2.2 Generate Premium Report" onmousemove="window.status='4.2.2.2 Generate Premium Report'"><img src="icons/11.gif" class="p"> <span id="l18" class="unselected">4.2.2.2 Generate Premium Report</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/4223-generate-quote-report.html" onclick="return LinkClick('19',false,true)" target="content" title="4.2.2.3 Generate Quote Report" onmousemove="window.status='4.2.2.3 Generate Quote Report'"><img src="icons/11.gif" class="p"> <span id="l19" class="unselected">4.2.2.3 Generate Quote Report</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/4224-generate-policy-report.html" onclick="return LinkClick('20',false,true)" target="content" title="4.2.2.4 Generate Policy Report" onmousemove="window.status='4.2.2.4 Generate Policy Report'"><img src="icons/11.gif" class="p"> <span id="l20" class="unselected">4.2.2.4 Generate Policy Report</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/4225-generate-dealership-report.html" onclick="return LinkClick('21',false,true)" target="content" title="4.2.2.5 Generate Dealership Report" onmousemove="window.status='4.2.2.5 Generate Dealership Report'"><img src="icons/11.gif" class="p"> <span id="l21" class="unselected">4.2.2.5 Generate Dealership Report</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/4226-generate-insurance-report.html" onclick="return LinkClick('22',false,true)" target="content" title="4.2.2.6 Generate Insurance Report" onmousemove="window.status='4.2.2.6 Generate Insurance Report'"><img src="icons/11.gif" class="p"> <span id="l22" class="unselected">4.2.2.6 Generate Insurance Report</span></a></nobr></div>
+</div><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('23',false,true)" target="content" title="4.2.3 DashBoard Page" onmousemove="window.status='4.2.3 DashBoard Page'"><img src="icons/11.gif" class="p"> <span id="l23" class="unselected">4.2.3 DashBoard Page</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><a href="#" onClick="return NodeClick('24')"><img id="imgn24" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('24',true,false)" onDblClick="return LinkDblClick('24')" target="content" title="4.2.4 Banks" onmousemove="window.status='4.2.4 Banks'"><img id="img24" src="icons/1.gif" class="p"> <span id="l24" class="unselected">4.2.4 Banks</span></a></nobr></div>
+<div id="d24" style="display:none"><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/4241-banks-home-page.html" onclick="return LinkClick('25',false,true)" target="content" title="4.2.4.1 Banks Home Page" onmousemove="window.status='4.2.4.1 Banks Home Page'"><img src="icons/11.gif" class="p"> <span id="l25" class="unselected">4.2.4.1 Banks Home Page</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/4242-add-bank.html" onclick="return LinkClick('26',false,true)" target="content" title="4.2.4.2 Add Bank" onmousemove="window.status='4.2.4.2 Add Bank'"><img src="icons/11.gif" class="p"> <span id="l26" class="unselected">4.2.4.2 Add Bank</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/4243-update-bank.html" onclick="return LinkClick('27',false,true)" target="content" title="4.2.4.3 Update Bank" onmousemove="window.status='4.2.4.3 Update Bank'"><img src="icons/11.gif" class="p"> <span id="l27" class="unselected">4.2.4.3 Update Bank</span></a></nobr></div>
+</div><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><a href="#" onClick="return NodeClick('28')"><img id="imgn28" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('28',true,false)" onDblClick="return LinkDblClick('28')" target="content" title="4.2.5 Business Banking Details" onmousemove="window.status='4.2.5 Business Banking Details'"><img id="img28" src="icons/1.gif" class="p"> <span id="l28" class="unselected">4.2.5 Business Banking Details</span></a></nobr></div>
+<div id="d28" style="display:none"><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/4251-business-banking-details-homepage.html" onclick="return LinkClick('29',false,true)" target="content" title="4.2.5.1 Business Banking Details Homepage" onmousemove="window.status='4.2.5.1 Business Banking Details Homepage'"><img src="icons/11.gif" class="p"> <span id="l29" class="unselected">4.2.5.1 Business Banking Details Homepage</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/4252-add-business-banking-details.html" onclick="return LinkClick('30',false,true)" target="content" title="4.2.5.2 Add Business Banking Details" onmousemove="window.status='4.2.5.2 Add Business Banking Details'"><img src="icons/11.gif" class="p"> <span id="l30" class="unselected">4.2.5.2 Add Business Banking Details</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/4253-update-business-banking-details.html" onclick="return LinkClick('31',false,true)" target="content" title="4.2.5.3 Update Business Banking Details" onmousemove="window.status='4.2.5.3 Update Business Banking Details'"><img src="icons/11.gif" class="p"> <span id="l31" class="unselected">4.2.5.3 Update Business Banking Details</span></a></nobr></div>
+</div><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><a href="#" onClick="return NodeClick('32')"><img id="imgn32" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('32',true,false)" onDblClick="return LinkDblClick('32')" target="content" title="4.2.6 Business Contact Details" onmousemove="window.status='4.2.6 Business Contact Details'"><img id="img32" src="icons/1.gif" class="p"> <span id="l32" class="unselected">4.2.6 Business Contact Details</span></a></nobr></div>
+<div id="d32" style="display:none"><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/4261-business-contact-details-homepage.html" onclick="return LinkClick('33',false,true)" target="content" title="4.2.6.1 Business Contact Details Homepage" onmousemove="window.status='4.2.6.1 Business Contact Details Homepage'"><img src="icons/11.gif" class="p"> <span id="l33" class="unselected">4.2.6.1 Business Contact Details Homepage</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/4262-add-business-contact-details.html" onclick="return LinkClick('34',false,true)" target="content" title="4.2.6.2 Add Business Contact Details" onmousemove="window.status='4.2.6.2 Add Business Contact Details'"><img src="icons/11.gif" class="p"> <span id="l34" class="unselected">4.2.6.2 Add Business Contact Details</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('35',false,true)" target="content" title="4.2.6.3 Update Business Contact Details" onmousemove="window.status='4.2.6.3 Update Business Contact Details'"><img src="icons/11.gif" class="p"> <span id="l35" class="unselected">4.2.6.3 Update Business Contact Details</span></a></nobr></div>
+</div><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><a href="#" onClick="return NodeClick('36')"><img id="imgn36" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('36',true,false)" onDblClick="return LinkDblClick('36')" target="content" title="4.2.7. Vehicle Make" onmousemove="window.status='4.2.7. Vehicle Make'"><img id="img36" src="icons/1.gif" class="p"> <span id="l36" class="unselected">4.2.7. Vehicle Make</span></a></nobr></div>
+<div id="d36" style="display:none"><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/4271-vehicle-makes-home-page.html" onclick="return LinkClick('37',false,true)" target="content" title="4.2.7.1 Vehicle Makes Home Page" onmousemove="window.status='4.2.7.1 Vehicle Makes Home Page'"><img src="icons/11.gif" class="p"> <span id="l37" class="unselected">4.2.7.1 Vehicle Makes Home Page</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/4272-add-vehicle-make.html" onclick="return LinkClick('38',false,true)" target="content" title="4.2.7.2 Add Vehicle Make" onmousemove="window.status='4.2.7.2 Add Vehicle Make'"><img src="icons/11.gif" class="p"> <span id="l38" class="unselected">4.2.7.2 Add Vehicle Make</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/4273-update-vehicle-make.html" onclick="return LinkClick('39',false,true)" target="content" title="4.2.7.3 Update Vehicle Make" onmousemove="window.status='4.2.7.3 Update Vehicle Make'"><img src="icons/11.gif" class="p"> <span id="l39" class="unselected">4.2.7.3 Update Vehicle Make</span></a></nobr></div>
+</div><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><a href="#" onClick="return NodeClick('40')"><img id="imgn40" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('40',true,false)" onDblClick="return LinkDblClick('40')" target="content" title="4.2.8 Vehicle Types" onmousemove="window.status='4.2.8 Vehicle Types'"><img id="img40" src="icons/1.gif" class="p"> <span id="l40" class="unselected">4.2.8 Vehicle Types</span></a></nobr></div>
+<div id="d40" style="display:none"><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/4281-vehicle-types-home-page.html" onclick="return LinkClick('41',false,true)" target="content" title="4.2.8.1 Vehicle Types Home Page" onmousemove="window.status='4.2.8.1 Vehicle Types Home Page'"><img src="icons/11.gif" class="p"> <span id="l41" class="unselected">4.2.8.1 Vehicle Types Home Page</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/4282-add-vehicle-type.html" onclick="return LinkClick('42',false,true)" target="content" title="4.2.8.2 Add Vehicle Type" onmousemove="window.status='4.2.8.2 Add Vehicle Type'"><img src="icons/11.gif" class="p"> <span id="l42" class="unselected">4.2.8.2 Add Vehicle Type</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/4283-update-vehicle-type.html" onclick="return LinkClick('43',false,true)" target="content" title="4.2.8.3 Update Vehicle Type" onmousemove="window.status='4.2.8.3 Update Vehicle Type'"><img src="icons/11.gif" class="p"> <span id="l43" class="unselected">4.2.8.3 Update Vehicle Type</span></a></nobr></div>
+</div><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><a href="#" onClick="return NodeClick('44')"><img id="imgn44" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('44',true,false)" onDblClick="return LinkDblClick('44')" target="content" title="4.2.9 Vehicle Model" onmousemove="window.status='4.2.9 Vehicle Model'"><img id="img44" src="icons/1.gif" class="p"> <span id="l44" class="unselected">4.2.9 Vehicle Model</span></a></nobr></div>
+<div id="d44" style="display:none"><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/4291-vehicle-model-home-page.html" onclick="return LinkClick('45',false,true)" target="content" title="4.2.9.1 Vehicle Model Home Page" onmousemove="window.status='4.2.9.1 Vehicle Model Home Page'"><img src="icons/11.gif" class="p"> <span id="l45" class="unselected">4.2.9.1 Vehicle Model Home Page</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/4292-add-vehicle-model.html" onclick="return LinkClick('46',false,true)" target="content" title="4.2.9.2 Add Vehicle Model" onmousemove="window.status='4.2.9.2 Add Vehicle Model'"><img src="icons/11.gif" class="p"> <span id="l46" class="unselected">4.2.9.2 Add Vehicle Model</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/4293-update-vehicle-model.html" onclick="return LinkClick('47',false,true)" target="content" title="4.2.9.3 Update Vehicle Model" onmousemove="window.status='4.2.9.3 Update Vehicle Model'"><img src="icons/11.gif" class="p"> <span id="l47" class="unselected">4.2.9.3 Update Vehicle Model</span></a></nobr></div>
+</div><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><a href="#" onClick="return NodeClick('48')"><img id="imgn48" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('48',true,false)" onDblClick="return LinkDblClick('48')" target="content" title="4.2.10 Vehicle Colour" onmousemove="window.status='4.2.10 Vehicle Colour'"><img id="img48" src="icons/1.gif" class="p"> <span id="l48" class="unselected">4.2.10 Vehicle Colour</span></a></nobr></div>
+<div id="d48" style="display:none"><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/42101-vehicle-colour-home-page.html" onclick="return LinkClick('49',false,true)" target="content" title="4.2.10.1 Vehicle Colour Home Page" onmousemove="window.status='4.2.10.1 Vehicle Colour Home Page'"><img src="icons/11.gif" class="p"> <span id="l49" class="unselected">4.2.10.1 Vehicle Colour Home Page</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/42102-add-vehicle-colour.html" onclick="return LinkClick('50',false,true)" target="content" title="4.2.10.2 Add Vehicle Colour" onmousemove="window.status='4.2.10.2 Add Vehicle Colour'"><img src="icons/11.gif" class="p"> <span id="l50" class="unselected">4.2.10.2 Add Vehicle Colour</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/42103-update-vehicle-colour.html" onclick="return LinkClick('51',false,true)" target="content" title="4.2.10.3 Update Vehicle Colour" onmousemove="window.status='4.2.10.3 Update Vehicle Colour'"><img src="icons/11.gif" class="p"> <span id="l51" class="unselected">4.2.10.3 Update Vehicle Colour</span></a></nobr></div>
+</div><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><a href="#" onClick="return NodeClick('52')"><img id="imgn52" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('52',true,false)" onDblClick="return LinkDblClick('52')" target="content" title="4.2.11 Vehicle Series" onmousemove="window.status='4.2.11 Vehicle Series'"><img id="img52" src="icons/1.gif" class="p"> <span id="l52" class="unselected">4.2.11 Vehicle Series</span></a></nobr></div>
+<div id="d52" style="display:none"><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/42111-vehicle-series-home-page.html" onclick="return LinkClick('53',false,true)" target="content" title="4.2.11.1 Vehicle Series Home Page" onmousemove="window.status='4.2.11.1 Vehicle Series Home Page'"><img src="icons/11.gif" class="p"> <span id="l53" class="unselected">4.2.11.1 Vehicle Series Home Page</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/42112-add-vehicle-series.html" onclick="return LinkClick('54',false,true)" target="content" title="4.2.11.2 Add Vehicle series" onmousemove="window.status='4.2.11.2 Add Vehicle series'"><img src="icons/11.gif" class="p"> <span id="l54" class="unselected">4.2.11.2 Add Vehicle series</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/42113-update-vehicle-series.html" onclick="return LinkClick('55',false,true)" target="content" title="4.2.11.3 Update Vehicle series" onmousemove="window.status='4.2.11.3 Update Vehicle series'"><img src="icons/11.gif" class="p"> <span id="l55" class="unselected">4.2.11.3 Update Vehicle series</span></a></nobr></div>
+</div><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/4212-quotation-requests.html" onclick="return LinkClick('56',false,true)" target="content" title="4.2.12 Quotation Requests" onmousemove="window.status='4.2.12 Quotation Requests'"><img src="icons/11.gif" class="p"> <span id="l56" class="unselected">4.2.12 Quotation Requests</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><a href="#" onClick="return NodeClick('57')"><img id="imgn57" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('57',true,false)" onDblClick="return LinkDblClick('57')" target="content" title="4.2.13. Policy" onmousemove="window.status='4.2.13. Policy'"><img id="img57" src="icons/1.gif" class="p"> <span id="l57" class="unselected">4.2.13. Policy</span></a></nobr></div>
+<div id="d57" style="display:none"><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/42131-create-policy.html" onclick="return LinkClick('58',false,true)" target="content" title="4.2.13.1 Create Policy" onmousemove="window.status='4.2.13.1 Create Policy'"><img src="icons/11.gif" class="p"> <span id="l58" class="unselected">4.2.13.1 Create Policy</span></a></nobr></div>
+</div><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><a href="#" onClick="return NodeClick('59')"><img id="imgn59" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('59',true,false)" onDblClick="return LinkDblClick('59')" target="content" title="4.2.14 Claims" onmousemove="window.status='4.2.14 Claims'"><img id="img59" src="icons/1.gif" class="p"> <span id="l59" class="unselected">4.2.14 Claims</span></a></nobr></div>
+<div id="d59" style="display:none"><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/42141-claims-home-page.html" onclick="return LinkClick('60',false,true)" target="content" title="4.2.14.1 Claims Home Page" onmousemove="window.status='4.2.14.1 Claims Home Page'"><img src="icons/11.gif" class="p"> <span id="l60" class="unselected">4.2.14.1 Claims Home Page</span></a></nobr></div>
+</div><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><a href="#" onClick="return NodeClick('61')"><img id="imgn61" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('61',true,false)" onDblClick="return LinkDblClick('61')" target="content" title="4.2.15 Employees" onmousemove="window.status='4.2.15 Employees'"><img id="img61" src="icons/1.gif" class="p"> <span id="l61" class="unselected">4.2.15 Employees</span></a></nobr></div>
+<div id="d61" style="display:none"><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/42151-employee-home-page.html" onclick="return LinkClick('62',false,true)" target="content" title="4.2.15.1 Employee Home Page" onmousemove="window.status='4.2.15.1 Employee Home Page'"><img src="icons/11.gif" class="p"> <span id="l62" class="unselected">4.2.15.1 Employee Home Page</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/42152-add-employees.html" onclick="return LinkClick('63',false,true)" target="content" title="4.2.15.2 Add Employees" onmousemove="window.status='4.2.15.2 Add Employees'"><img src="icons/11.gif" class="p"> <span id="l63" class="unselected">4.2.15.2 Add Employees</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/42153-update-employees.html" onclick="return LinkClick('64',false,true)" target="content" title="4.2.15.3 Update Employees" onmousemove="window.status='4.2.15.3 Update Employees'"><img src="icons/11.gif" class="p"> <span id="l64" class="unselected">4.2.15.3 Update Employees</span></a></nobr></div>
+</div><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><a href="#" onClick="return NodeClick('65')"><img id="imgn65" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('65',true,false)" onDblClick="return LinkDblClick('65')" target="content" title="4.2.16 Employee Type" onmousemove="window.status='4.2.16 Employee Type'"><img id="img65" src="icons/1.gif" class="p"> <span id="l65" class="unselected">4.2.16 Employee Type</span></a></nobr></div>
+<div id="d65" style="display:none"><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/42161-employee-type-home-page.html" onclick="return LinkClick('66',false,true)" target="content" title="4.2.16.1 Employee Type Home Page" onmousemove="window.status='4.2.16.1 Employee Type Home Page'"><img src="icons/11.gif" class="p"> <span id="l66" class="unselected">4.2.16.1 Employee Type Home Page</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/42162-add-employee-type.html" onclick="return LinkClick('67',false,true)" target="content" title="4.2.16.2 Add Employee Type" onmousemove="window.status='4.2.16.2 Add Employee Type'"><img src="icons/11.gif" class="p"> <span id="l67" class="unselected">4.2.16.2 Add Employee Type</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/42163-update-employee-type.html" onclick="return LinkClick('68',false,true)" target="content" title="4.2.16.3 Update Employee Type" onmousemove="window.status='4.2.16.3 Update Employee Type'"><img src="icons/11.gif" class="p"> <span id="l68" class="unselected">4.2.16.3 Update Employee Type</span></a></nobr></div>
+</div><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><a href="#" onClick="return NodeClick('69')"><img id="imgn69" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('69',true,false)" onDblClick="return LinkDblClick('69')" target="content" title="4.2.17 Excess Multiplier" onmousemove="window.status='4.2.17 Excess Multiplier'"><img id="img69" src="icons/1.gif" class="p"> <span id="l69" class="unselected">4.2.17 Excess Multiplier</span></a></nobr></div>
+<div id="d69" style="display:none"><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/42171-excess-multiplier-home-page.html" onclick="return LinkClick('70',false,true)" target="content" title="4.2.17.1 Excess Multiplier Home Page" onmousemove="window.status='4.2.17.1 Excess Multiplier Home Page'"><img src="icons/11.gif" class="p"> <span id="l70" class="unselected">4.2.17.1 Excess Multiplier Home Page</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/42172-add-excess-multiplier.html" onclick="return LinkClick('71',false,true)" target="content" title="4.2.17.2 Add Excess Multiplier" onmousemove="window.status='4.2.17.2 Add Excess Multiplier'"><img src="icons/11.gif" class="p"> <span id="l71" class="unselected">4.2.17.2 Add Excess Multiplier</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/42173-update-excess-multiplier.html" onclick="return LinkClick('72',false,true)" target="content" title="4.2.17.3 Update Excess Multiplier" onmousemove="window.status='4.2.17.3 Update Excess Multiplier'"><img src="icons/11.gif" class="p"> <span id="l72" class="unselected">4.2.17.3 Update Excess Multiplier</span></a></nobr></div>
+</div><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><a href="#" onClick="return NodeClick('73')"><img id="imgn73" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('73',true,false)" onDblClick="return LinkDblClick('73')" target="content" title="4.2.18 Excess Bracket Tier" onmousemove="window.status='4.2.18 Excess Bracket Tier'"><img id="img73" src="icons/1.gif" class="p"> <span id="l73" class="unselected">4.2.18 Excess Bracket Tier</span></a></nobr></div>
+<div id="d73" style="display:none"><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('74',false,true)" target="content" title="4.2.18.1 Excess Bracket Tier Home Page" onmousemove="window.status='4.2.18.1 Excess Bracket Tier Home Page'"><img src="icons/11.gif" class="p"> <span id="l74" class="unselected">4.2.18.1 Excess Bracket Tier Home Page</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/42182-add-excess-brackett.html" onclick="return LinkClick('75',false,true)" target="content" title="4.2.18.2 Add Excess Brackett" onmousemove="window.status='4.2.18.2 Add Excess Brackett'"><img src="icons/11.gif" class="p"> <span id="l75" class="unselected">4.2.18.2 Add Excess Brackett</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/42183-update-excess-bracket.html" onclick="return LinkClick('76',false,true)" target="content" title="4.2.18.3 Update Excess Bracket" onmousemove="window.status='4.2.18.3 Update Excess Bracket'"><img src="icons/11.gif" class="p"> <span id="l76" class="unselected">4.2.18.3 Update Excess Bracket</span></a></nobr></div>
+</div><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><a href="#" onClick="return NodeClick('77')"><img id="imgn77" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('77',true,false)" onDblClick="return LinkDblClick('77')" target="content" title="4.2.19 Policy" onmousemove="window.status='4.2.19 Policy'"><img id="img77" src="icons/1.gif" class="p"> <span id="l77" class="unselected">4.2.19 Policy</span></a></nobr></div>
+<div id="d77" style="display:none"><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/42191-policy-home-page.html" onclick="return LinkClick('78',false,true)" target="content" title="4.2.19.1 Policy Home Page" onmousemove="window.status='4.2.19.1 Policy Home Page'"><img src="icons/11.gif" class="p"> <span id="l78" class="unselected">4.2.19.1 Policy Home Page</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/42192-create-policy-page.html" onclick="return LinkClick('79',false,true)" target="content" title="4.2.19.2 Create Policy Page" onmousemove="window.status='4.2.19.2 Create Policy Page'"><img src="icons/11.gif" class="p"> <span id="l79" class="unselected">4.2.19.2 Create Policy Page</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/42193-view-policy-page.html" onclick="return LinkClick('80',false,true)" target="content" title="4.2.19.3 View Policy Page" onmousemove="window.status='4.2.19.3 View Policy Page'"><img src="icons/11.gif" class="p"> <span id="l80" class="unselected">4.2.19.3 View Policy Page</span></a></nobr></div>
+</div><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><a href="#" onClick="return NodeClick('81')"><img id="imgn81" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('81',true,false)" onDblClick="return LinkDblClick('81')" target="content" title="4.2.20 Loan Request Status" onmousemove="window.status='4.2.20 Loan Request Status'"><img id="img81" src="icons/1.gif" class="p"> <span id="l81" class="unselected">4.2.20 Loan Request Status</span></a></nobr></div>
+<div id="d81" style="display:none"><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/42201-loan-request-status-page.html" onclick="return LinkClick('82',false,true)" target="content" title="4.2.20.1 Loan Request Status Page" onmousemove="window.status='4.2.20.1 Loan Request Status Page'"><img src="icons/11.gif" class="p"> <span id="l82" class="unselected">4.2.20.1 Loan Request Status Page</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/42202-add-loan-request-status.html" onclick="return LinkClick('83',false,true)" target="content" title="4.2.20.2 Add Loan request status" onmousemove="window.status='4.2.20.2 Add Loan request status'"><img src="icons/11.gif" class="p"> <span id="l83" class="unselected">4.2.20.2 Add Loan request status</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/42203-update-loan-request-status.html" onclick="return LinkClick('84',false,true)" target="content" title="4.2.20.3 Update Loan request status" onmousemove="window.status='4.2.20.3 Update Loan request status'"><img src="icons/11.gif" class="p"> <span id="l84" class="unselected">4.2.20.3 Update Loan request status</span></a></nobr></div>
+</div><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><a href="#" onClick="return NodeClick('85')"><img id="imgn85" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('85',true,false)" onDblClick="return LinkDblClick('85')" target="content" title="4.2.21 Loan Request" onmousemove="window.status='4.2.21 Loan Request'"><img id="img85" src="icons/1.gif" class="p"> <span id="l85" class="unselected">4.2.21 Loan Request</span></a></nobr></div>
+<div id="d85" style="display:none"><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/42211-loan-request-status-page.html" onclick="return LinkClick('86',false,true)" target="content" title="4.2.21.1 Loan Request Status Page" onmousemove="window.status='4.2.21.1 Loan Request Status Page'"><img src="icons/11.gif" class="p"> <span id="l86" class="unselected">4.2.21.1 Loan Request Status Page</span></a></nobr></div>
+</div><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><a href="#" onClick="return NodeClick('87')"><img id="imgn87" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('87',true,false)" onDblClick="return LinkDblClick('87')" target="content" title="4.2.22 Insurance Companies" onmousemove="window.status='4.2.22 Insurance Companies'"><img id="img87" src="icons/1.gif" class="p"> <span id="l87" class="unselected">4.2.22 Insurance Companies</span></a></nobr></div>
+<div id="d87" style="display:none"><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('88',false,true)" target="content" title="4.2.22.1 Insurance companies Page" onmousemove="window.status='4.2.22.1 Insurance companies Page'"><img src="icons/11.gif" class="p"> <span id="l88" class="unselected">4.2.22.1 Insurance companies Page</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/42222-add-insurance-company.html" onclick="return LinkClick('89',false,true)" target="content" title="4.2.22.2 Add Insurance company" onmousemove="window.status='4.2.22.2 Add Insurance company'"><img src="icons/11.gif" class="p"> <span id="l89" class="unselected">4.2.22.2 Add Insurance company</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/42223-update-insurance-companies.html" onclick="return LinkClick('90',false,true)" target="content" title="4.2.22.3 Update Insurance companies" onmousemove="window.status='4.2.22.3 Update Insurance companies'"><img src="icons/11.gif" class="p"> <span id="l90" class="unselected">4.2.22.3 Update Insurance companies</span></a></nobr></div>
+</div><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><a href="#" onClick="return NodeClick('91')"><img id="imgn91" src="icons/uaplus.gif" class="p"></a><a href="#" onclick="return LinkClick('91',true,false)" onDblClick="return LinkDblClick('91')" target="content" title="4.2.23 VAT" onmousemove="window.status='4.2.23 VAT'"><img id="img91" src="icons/1.gif" class="p"> <span id="l91" class="unselected">4.2.23 VAT</span></a></nobr></div>
+<div id="d91" style="display:none"><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/42231-vat-homepage.html" onclick="return LinkClick('92',false,true)" target="content" title="4.2.23.1 VAT HomePage" onmousemove="window.status='4.2.23.1 VAT HomePage'"><img src="icons/11.gif" class="p"> <span id="l92" class="unselected">4.2.23.1 VAT HomePage</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/42231-update-vat.html" onclick="return LinkClick('93',false,true)" target="content" title="4.2.23.1 Update VAT" onmousemove="window.status='4.2.23.1 Update VAT'"><img src="icons/11.gif" class="p"> <span id="l93" class="unselected">4.2.23.1 Update VAT</span></a></nobr></div>
+</div></div></div><script>divlist = [0,2,4,9,11,12,16,24,28,32,36,40,44,48,52,57,59,61,65,69,73,77,81,85,87,91]</script>
+</body>
+</html>
